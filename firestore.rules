@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// GrowMediaX Desk: only the owner's verified Google account can read or write anything.
+// Paste this in Firebase console > Firestore Database > Rules, then click Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.token.email == "devjerthi@gmail.com"
+        && request.auth.token.email_verified == true;
+    }
+  }
+}
