@@ -1,8 +1,8 @@
 // GrowMediaX Desk service worker: makes the app installable and lets it open offline.
 // Data itself is synced by Firebase; this only caches the app files.
-const CACHE = 'gmx-desk-v2';
+const CACHE = 'gmx-desk-v4';
 const SHELL = ['./', './index.html', './config.js', './manifest.webmanifest',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png', './icons/logo-256.png'];
+  './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon-32.png', './logo-256.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

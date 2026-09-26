@@ -11,8 +11,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GrowMediaX">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -349,7 +349,6 @@ body.locked .top,body.locked main{display:none}
       <button class="btn on-brand sm" data-act="security" type="button">Security<span class="lg"> &amp; backup</span></button>
       <button class="btn on-brand sm" data-act="export" id="exportBtn" type="button">Export<span class="lg"> to Excel</span></button>
       <button class="btn on-brand sm" data-act="lockNow" id="lockBtn" type="button" hidden>Lock</button>
-      <button class="btn on-brand sm" data-act="logout" id="logoutBtn" type="button" hidden>Log out</button>
     </div>
     <nav class="tabs" id="tabs" aria-label="Sections"></nav>
   </div>
@@ -468,10 +467,9 @@ function placeInk(){
   ink.style.left=act.offsetLeft+'px';ink.style.width=act.offsetWidth+'px';S.inkPos={l:act.offsetLeft,w:act.offsetWidth};
 }
 function render(fresh){
-  if(S.locked||!S.started){ $('#lockBtn').hidden=true; $('#logoutBtn').hidden=true; if(!S.started&&!S.locked){$('#app').innerHTML='<div class="empty">Loading your data…</div>'} return }
+  if(S.locked||!S.started){ $('#lockBtn').hidden=true; if(!S.started&&!S.locked){$('#app').innerHTML='<div class="empty">Loading your data…</div>'} return }
   renderTabs();
   $('#lockBtn').hidden=!(S.lock&&S.lock.hash);
-  $('#logoutBtn').hidden=!S.uid;
   const app=$('#app');
   const keep={};let foc=null;
   if(!fresh){app.querySelectorAll('.qa [id]').forEach(el=>keep[el.id]=el.value);foc=document.activeElement&&app.contains(document.activeElement)?document.activeElement.id:null}
@@ -1196,7 +1194,7 @@ function showLock(msg){
   S.locked=true;document.body.classList.add('locked');closeModal();hideTip();pinBuf='';
   $('#app').innerHTML='';
   $('#lockRoot').innerHTML=`<div class="lock" role="dialog" aria-modal="true" aria-label="App locked"><div class="lock-in">
-    <img class="lock-logo" src="icons/logo-256.png" alt="GrowMediaX logo" width="88" height="88">
+    <img class="lock-logo" src="logo-256.png" alt="GrowMediaX logo" width="88" height="88">
     <div class="mark">GrowMedia<b>X</b></div>
     <div><h1>Enter your PIN</h1><p>GrowMediaX Desk is locked</p></div>
     ${S.email?`<span class="who">${esc(S.email)}</span>`:''}
@@ -1330,7 +1328,7 @@ function showLogin(msg){
   S.locked=true;document.body.classList.add('locked');closeModal();
   $('#app').innerHTML='';
   $('#lockRoot').innerHTML=`<div class="lock" role="dialog" aria-modal="true" aria-label="Sign in"><div class="lock-in">
-    <img class="lock-logo" src="icons/logo-256.png" alt="GrowMediaX logo" width="88" height="88">
+    <img class="lock-logo" src="logo-256.png" alt="GrowMediaX logo" width="88" height="88">
     <div class="mark">GrowMedia<b>X</b></div>
     <div><h1>GrowMediaX Desk</h1><p>Clients, bills, ads and profit in one place</p></div>
     <button class="gbtn" type="button" data-act="login">${G_ICON}Sign in with Google</button>
@@ -1340,7 +1338,7 @@ function showLogin(msg){
 }
 function showSetup(){
   document.body.classList.add('locked');
-  $('#lockRoot').innerHTML=`<div class="lock"><div class="lock-in"><img class="lock-logo" src="icons/logo-256.png" alt="GrowMediaX logo" width="88" height="88"><div class="mark">GrowMedia<b>X</b></div><h1>Almost ready</h1>
+  $('#lockRoot').innerHTML=`<div class="lock"><div class="lock-in"><img class="lock-logo" src="logo-256.png" alt="GrowMediaX logo" width="88" height="88"><div class="mark">GrowMedia<b>X</b></div><h1>Almost ready</h1>
   <p>Open <b>config.js</b> and paste your Firebase settings and your email, then reload this page. The setup guide (README) has the steps.</p></div></div>`;
 }
 function googleProvider(){const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account',login_hint:ALLOWED});return p}
@@ -1369,6 +1367,7 @@ if(!CFG.firebase||!CFG.firebase.apiKey||/PASTE/i.test(CFG.firebase.apiKey)||!ALL
 else{
   firebase.initializeApp(CFG.firebase);
   AUTH=firebase.auth();DB=firebase.firestore();
+  AUTH.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
   DB.settings({ignoreUndefinedProperties:true,merge:true});
   DB.enablePersistence({synchronizeTabs:true}).catch(()=>{});
   AUTH.getRedirectResult().catch(e=>{if(e&&e.message)S.loginErr=e.message});
